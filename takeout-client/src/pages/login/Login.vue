@@ -2,7 +2,7 @@
   <section class="loginContainer">
     <div class="loginInner">
       <div class="login_header">
-        <h2 class="login_logo">硅谷外卖</h2>
+        <h2 class="login_logo">小陈外卖</h2>
         <div class="login_header_title">
           <a href="javascript:;" :class="{on: loginWay}" @click="loginWay=true">短信登录</a>
           <a href="javascript:;" :class="{on: !loginWay}" @click="loginWay=false">密码登录</a>
@@ -40,7 +40,8 @@
               </section>
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
-                <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha" ref="captcha">
+                <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha"
+                     ref="captcha">
               </section>
             </section>
           </div>
@@ -56,6 +57,9 @@
 </template>
 
 <script>
+import { onSendCode, smsLogin, passwordLogin } from '../../api/request'
+import { Toast } from 'mint-ui';
+
 export default {
   name: "Login",
   data() {
@@ -79,10 +83,95 @@ export default {
   },
   methods: {
     getCode() {
+      if (this.computeTime <= 0) {
+        this.computeTime = 30
+        this.invalidateId = setInterval(() => {
+          this.computeTime--
+          if (this.computeTime <= 0) {
+            clearInterval(this.invalidateId)
+          }
+        }, 1000)
 
+        onSendCode(this.phone)
+      }
     },
     getCaptcha() {
+      // 每次指定的src要不一样
+      this.$refs.captcha.src = 'http://localhost:4000/captcha?time='+Date.now()
+    },
+    async login() {
+      // 前台表单验证
+      let result
+      if (this.loginWay) {  // 短信登陆
+        const {rightPhone, phone, code} = this
+        if (!this.rightPhone) {
+          Toast({
+            message: '手机号不正确',
+            position: 'bottom',
+            duration: 2000
+          });
+          return
+        } else if (!/^\d{6}$/.test(code)) {
+          Toast({
+            message: '验证必须是6位数字',
+            position: 'bottom',
+            duration: 2000
+          });
+          return
+        }
+        // 发送ajax请求短信登陆
+        result = await smsLogin(phone, code)
+      } else {// 密码登陆
+        const {name, pwd, captcha} = this
+        if (!this.name) {
+          Toast({
+            message: '用户名必须指定',
+            position: 'bottom',
+            duration: 2000
+          });
+          return
+        } else if (!this.pwd) {
+          Toast({
+            message: '密码必须指定',
+            position: 'bottom',
+            duration: 2000
+          });
+          return
+        } else if (!this.captcha) {
+          Toast({
+            message: '验证码必须指定',
+            position: 'bottom',
+            duration: 2000
+          });
+          return
+        }
+        // 发送ajax请求密码登陆
+        result = await passwordLogin({name, pwd, captcha})
+      }
 
+      // 停止计时
+      if(this.computeTime > 0) {
+        this.computeTime = 0
+        clearInterval(this.intervalId)
+        this.intervalId = undefined
+      }
+
+      // 根据结果数据处理
+      if(result.code===0) {
+        const user = result.data
+        // 将user保存到vuex的state
+        this.$store.dispatch('reloadUserInfo', user)
+        // 去个人中心界面
+        this.$router.replace('/profile')
+      } else {
+        // 显示新的图片验证码
+        this.getCaptcha()
+        Toast({
+          message: result.msg,
+          position: 'bottom',
+          duration: 2000
+        });
+      }
     }
   }
 }
