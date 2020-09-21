@@ -40,6 +40,7 @@ export default {
   width 100%
   height 50px
   display flex
+  background-color white
 
   .footer-item
     display flex
