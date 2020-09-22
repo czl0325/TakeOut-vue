@@ -9,7 +9,7 @@
 
 ## 错误
 
-*
+* 126错误
 ```
 npm ERR! code ELIFECYCLE
 npm ERR! errno 126
@@ -21,6 +21,8 @@ rm package-lock.json
 npm cache clear --force
 npm install
 ```
+
+==========
 
 ## 知识点
 
@@ -60,7 +62,7 @@ new Vue({
 })
 ```
 
-* 4. actions.js文件。记住action传给mutation的应该是一个对象{userInfo}
+* 4.actions.js文件。记住action传给mutation的应该是一个对象{userInfo}
 
 ```
 export default {
@@ -70,7 +72,7 @@ export default {
 }
 ```
 
-* 5. mutations.js 接收actions传过来的对象并且更新到state中去，方法名和action需要保持一致
+* 5.mutations.js 接收actions传过来的对象并且更新到state中去，方法名和action需要保持一致
 
 ```
 ["RECEIVE_USER"](state, {userInfo}) {
