@@ -62,7 +62,6 @@ router.get('/captcha', function (req, res) {
         color: true
     });
     req.session.captcha = captcha.text.toLowerCase();
-    console.log(req.session.captcha)
     /*res.type('svg');
     res.status(200).send(captcha.data);*/
     res.type('svg');
