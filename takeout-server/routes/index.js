@@ -31,11 +31,11 @@ router.post('/login_pwd', function (req, res) {
 
     UserModel.findOne({name}, function (err, user) {
         if (user) {
-            console.log('findUser', user)
             if (user.pwd !== pwd) {
                 res.send({code: 1, msg: '用户名或密码不正确!'})
             } else {
                 req.session.userid = user._id
+                console.log("login_pwd", req.session)
                 res.send({code: 0, data: {_id: user._id, name: user.name, phone: user.phone}})
             }
         } else {

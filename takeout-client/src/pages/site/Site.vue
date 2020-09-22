@@ -4,8 +4,8 @@
       <router-link slot="left" class="left" to="/search">
         <i class="iconfont icon-sousuo"></i>
       </router-link>
-      <router-link slot="right" class="right" :to="userInfo.id?'/userinfo':'/login'">
-        <span class="header_login_text" v-if="!userInfo.id">
+      <router-link slot="right" class="right" :to="userInfo._id?'/profile':'/login'">
+        <span class="header_login_text" v-if="!userInfo._id">
           登录|注册
         </span>
         <span class="header_login_text" v-else>

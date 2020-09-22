@@ -7,10 +7,21 @@
 
 <script>
 import Tabbar from "./components/Tabbar";
+import {getUserInfo} from './api/request'
+
 export default {
   name: 'App',
   components: {
     Tabbar
+  },
+  created() {
+  },
+  mounted() {
+    getUserInfo().then(res => {
+      if (res.code === 0) {
+        this.$store.dispatch('reloadUserInfo', res.data)
+      }
+    })
   }
 }
 </script>
