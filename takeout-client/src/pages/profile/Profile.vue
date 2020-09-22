@@ -99,6 +99,7 @@
 import Header from '../../components/NavigationBar'
 import {mapState} from 'vuex'
 import {MessageBox, Toast} from 'mint-ui'
+import {requestLogout} from "../../api/request";
 
 export default {
   name: "Profile",
@@ -110,8 +111,10 @@ export default {
       MessageBox.confirm('确认退出吗?').then(
           action => {
             // 请求退出
-            this.$store.dispatch('logout')
-            Toast('登出完成')
+            requestLogout().then(res=>{
+              this.$store.dispatch('logout')
+              Toast('登出完成')
+            })
           },
           action => {
             console.log('点击了取消')
