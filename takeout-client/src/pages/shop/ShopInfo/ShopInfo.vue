@@ -56,27 +56,24 @@
 </template>
 
 <script>
-  import BScroll from 'better-scroll'
-  import {mapState} from 'vuex'
-  export default {
+import BScroll from 'better-scroll'
+import {getShopInfo} from "../../../api/request";
+
+export default {
 
     data () {
       return {
+        info: {},
         supportClasses: ['activity-green', 'activity-red', 'activity-orange']
       }
     },
-    computed: {
-      ...mapState(['info'])
-    },
-
-    mounted () {
-      // 如果数据还没有, 直接结束
-      if(!this.info.pics) {
-        return
-      }
-
-      // 数据有了, 可以创建BScroll对象形成滑动
-      this._initScroll()
+    created() {
+      getShopInfo().then(res=>{
+        this.info = res.data
+        if(this.info.pics) {
+          this._initScroll()
+        }
+      })
     },
 
     methods: {

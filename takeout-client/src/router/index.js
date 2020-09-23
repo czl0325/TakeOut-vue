@@ -60,7 +60,7 @@ export default new Router({
           component: ShopInfo,
         },
         {
-          path: '/shop/rating',
+          path: '/shop/ratings',
           component: ShopRatings,
         },
         {

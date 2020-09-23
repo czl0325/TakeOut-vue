@@ -51,11 +51,11 @@
 
 
 <script>
-  import {mapState} from 'vuex'
+  import {getShopGoods} from "../../../api/request";
   import CartControl from '../../../components/CartControl/CartControl.vue'
   import Food from '../../../components/Food/Food.vue'
   import ShopCart from '../../../components/ShopCart/ShopCart.vue'
-
+  import BScroll from 'better-scroll'
 
   export default {
     data() {
@@ -63,14 +63,15 @@
         scrollY: 0, // 右侧滑动的Y轴坐标 (滑动过程时实时变化)
         tops: [], // 所有右侧分类li的top组成的数组  (列表第一次显示后就不再变化)
         food: {}, // 需要显示的food
+        goods: []
       }
     },
-    mounted() {
-
+    created() {
+      getShopGoods().then(res=>{
+        this.goods = res.data
+      })
     },
     computed: {
-      ...mapState(['goods']),
-
       // 计算得到当前分类的下标
       currentIndex() {// 初始和相关数据发生了变化
         // 得到条件数据

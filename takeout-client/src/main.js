@@ -13,6 +13,8 @@ import 'mint-ui/lib/style.css'
 Vue.component(Button.name, Button)
 // Vue.use(Mint);
 
+import './mock/mockServer'
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

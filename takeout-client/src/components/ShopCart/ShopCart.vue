@@ -50,6 +50,10 @@
   import CartControl from '../CartControl/CartControl.vue'
 
   export default {
+    props: {
+      totalCount: Number,
+      deliveryPrice: Number
+    },
     data () {
       return {
         isShow: false
@@ -57,8 +61,6 @@
     },
 
     computed: {
-      ...mapState(['cartFoods', 'info']),
-      ...mapGetters(['totalCount', 'totalPrice']),
       payClass () {
         const {totalPrice} = this
         const {minPrice} = this.info

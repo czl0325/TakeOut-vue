@@ -111,8 +111,10 @@
 
 
 <script>
-  import {mapState} from 'vuex'
   export default {
+    props: {
+      info: Object
+    },
     data () {
       return {
         supportClasses: ['activity-green', 'activity-red', 'activity-orange'],
@@ -120,15 +122,10 @@
         supportShow: false
       }
     },
-    computed: {
-      ...mapState(['info'])
-    },
-
     methods: {
       toggleShopShow () {
         this.shopShow = !this.shopShow
       },
-
       toggleSupportShow () {
         this.supportShow = !this.supportShow
       }

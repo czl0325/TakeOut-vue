@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ShopHeader/>
+    <ShopHeader :info="info"/>
     <div class="tab">
       <div class="tab-item">
         <router-link to="/shop/goods" replace>点餐</router-link>
@@ -9,7 +9,7 @@
         <router-link to="/shop/ratings" replace>评价</router-link>
       </div>
       <div class="tab-item">
-        <router-link to="/shop/info" replace>商家</router-link>
+        <router-link :to="{path: '/shop/info'}" replace >商家</router-link>
       </div>
     </div>
     <keep-alive>
@@ -20,13 +20,21 @@
 
 <script>
 import ShopHeader from '../../components/ShopHeader/ShopHeader.vue'
+import { getShopInfo } from "../../api/request";
 
 export default {
-  mounted() {
-    this.$store.dispatch('getShopInfo')
-  },
   components: {
     ShopHeader
+  },
+  data() {
+    return {
+      info: {}
+    }
+  },
+  created() {
+    getShopInfo().then(res=>{
+      this.info = res.data
+    })
   }
 }
 </script>
@@ -51,7 +59,7 @@ export default {
       position relative
 
       &.router-link-active
-        color #02a774
+        color $green
 
         &::after
           content ''
@@ -61,5 +69,5 @@ export default {
           width 35px
           height 2px
           transform translateX(-50%)
-          background #02a774
+          background $green
 </style>

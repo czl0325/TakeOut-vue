@@ -18,3 +18,9 @@ export const passwordLogin = ({name, pwd, captcha}) => ajax('/api/login_pwd', {n
 export const getUserInfo = () => ajax("/api/userinfo")
 
 export const requestLogout = () => ajax("/api/logout")
+
+export const getShopInfo = () => ajax('/info')
+
+export const getShopRatings = () => ajax('/ratings')
+
+export const getShopGoods = () => ajax('/goods')
