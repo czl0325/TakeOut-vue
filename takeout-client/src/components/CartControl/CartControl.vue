@@ -16,7 +16,7 @@
 
     methods: {
       updateFoodCount (isAdd) {
-        this.$store.dispatch('updateFoodCount', {isAdd, food: this.food})
+        this.$emit('onFoodCount', {isAdd, food: this.food})
       }
     }
   }

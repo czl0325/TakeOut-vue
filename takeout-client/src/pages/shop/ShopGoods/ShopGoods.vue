@@ -18,8 +18,7 @@
           <li class="food-list-hook" v-for="(good, index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods"
-                  :key="index" @click="showFood(food)">
+              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index" @click="showFood(food)">
                 <div class="icon">
                   <img width="57" height="57" :src="food.icon">
                 </div>
@@ -35,7 +34,7 @@
                     <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    <CartControl :food="food"/>
+                    <CartControl :food="food" v-on:onFoodCount="updateFoodCount"/>
                   </div>
                 </div>
               </li>
@@ -43,7 +42,7 @@
           </li>
         </ul>
       </div>
-      <ShopCart />
+      <ShopCart :info="info" :cartFoods="cartFoods"/>
     </div>
     <Food :food="food" ref="food"/>
   </div>
@@ -51,11 +50,12 @@
 
 
 <script>
-  import {getShopGoods} from "../../../api/request";
+  import {getShopInfo,getShopGoods} from "../../../api/request";
   import CartControl from '../../../components/CartControl/CartControl.vue'
   import Food from '../../../components/Food/Food.vue'
   import ShopCart from '../../../components/ShopCart/ShopCart.vue'
   import BScroll from 'better-scroll'
+  import Vue from 'vue'
 
   export default {
     data() {
@@ -63,12 +63,21 @@
         scrollY: 0, // 右侧滑动的Y轴坐标 (滑动过程时实时变化)
         tops: [], // 所有右侧分类li的top组成的数组  (列表第一次显示后就不再变化)
         food: {}, // 需要显示的food
-        goods: []
+        goods: [],
+        info: {},
+        cartFoods: []
       }
     },
-    created() {
+    mounted() {
+      getShopInfo().then(res=>{
+        this.info = res.data
+      })
       getShopGoods().then(res=>{
         this.goods = res.data
+        this.$nextTick(()=>{
+          this._initScroll()
+          this._initTops()
+        })
       })
     },
     computed: {
@@ -94,18 +103,16 @@
           click: true
         })
         this.foodsScroll = new BScroll('.foods-wrapper', {
-          probeType: 2,  // 因为惯性滑动不会触发
+          probeType: 3,
           click: true
         })
 
         // 给右侧列表绑定scroll监听
         this.foodsScroll.on('scroll', ({x, y}) => {
-          console.log(x, y)
           this.scrollY = Math.abs(y)
         })
         // 给右侧列表绑定scroll结束的监听
         this.foodsScroll.on('scrollEnd', ({x, y}) => {
-          console.log('scrollEnd', x, y)
           this.scrollY = Math.abs(y)
         })
 
@@ -123,14 +130,11 @@
           top += li.clientHeight
           tops.push(top)
         })
-
         // 3. 更新数据
         this.tops = tops
-        console.log(tops)
       },
 
       clickMenuItem(index) {
-        // console.log(index)
         // 使用右侧列表滑动到对应的位置
 
         // 得到目标位置的scrollY
@@ -147,6 +151,25 @@
         this.food = food
         // 显示food组件 (在父组件中调用子组件对象的方法)
         this.$refs.food.toggleShow()
+      },
+
+      updateFoodCount(event) {
+        let food = event.food
+        if (event.isAdd) {
+          if (!food.count) {
+            Vue.set(food, 'count', 1)
+            this.cartFoods.push(food)
+          } else {
+            let index = this.cartFoods.indexOf(food)
+            food.count++
+            this.cartFoods.splice(index, 1, food)
+          }
+        } else {
+          food.count--
+          if(food.count===0) {
+            this.cartFoods.splice(this.cartFoods.indexOf(food), 1)
+          }
+        }
       }
     },
 
@@ -203,6 +226,7 @@
           font-size: 12px
     .foods-wrapper
       flex: 1
+      text-align left
       .title
         padding-left: 14px
         height: 26px

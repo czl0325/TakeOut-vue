@@ -46,17 +46,30 @@
 <script>
   import { MessageBox } from 'mint-ui'
   import BScroll from 'better-scroll'
-  import {mapState, mapGetters} from 'vuex'
   import CartControl from '../CartControl/CartControl.vue'
 
   export default {
     props: {
-      totalCount: Number,
-      deliveryPrice: Number
+      info: Object,
+      cartFoods: Array
     },
     data () {
       return {
-        isShow: false
+        isShow: false,
+        totalPrice: 0,
+        totalCount: 0
+      }
+    },
+    watch: {
+      cartFoods(val) {
+        let count = 0
+        let price = 0
+        for (let food of val) {
+          count += food.count
+          price += food.price*food.count
+        }
+        this.totalCount = count
+        this.totalPrice = price
       }
     },
 
@@ -64,7 +77,6 @@
       payClass () {
         const {totalPrice} = this
         const {minPrice} = this.info
-
         return totalPrice>=minPrice ? 'enough' : 'not-enough'
       },
       payText () {
@@ -96,7 +108,6 @@
             } else {
               this.scroll.refresh() // 让滚动条刷新一下: 重新统计内容的高度
             }
-
           })
         }
 
@@ -142,6 +153,7 @@
       color rgba(255, 255, 255, 0.4)
       .content-left
         flex 1
+        text-align left
         .logo-wrapper
           display inline-block
           vertical-align top
