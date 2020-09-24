@@ -42,7 +42,7 @@
           </li>
         </ul>
       </div>
-      <ShopCart :info="info" :cartFoods="cartFoods"/>
+      <ShopCart :info="info" :cartFoods="cartFoods" v-on:clean="onClearCart"/>
     </div>
     <Food :food="food" ref="food"/>
   </div>
@@ -155,12 +155,12 @@
 
       updateFoodCount(event) {
         let food = event.food
+        let index = this.cartFoods.indexOf(food)
         if (event.isAdd) {
           if (!food.count) {
             Vue.set(food, 'count', 1)
             this.cartFoods.push(food)
           } else {
-            let index = this.cartFoods.indexOf(food)
             food.count++
             this.cartFoods.splice(index, 1, food)
           }
@@ -168,8 +168,15 @@
           food.count--
           if(food.count===0) {
             this.cartFoods.splice(this.cartFoods.indexOf(food), 1)
+          } else {
+            this.cartFoods.splice(index, 1, food)
           }
         }
+      },
+
+      onClearCart() {
+        this.cartFoods.forEach(food => food.count = 0)
+        this.cartFoods = []
       }
     },
 
